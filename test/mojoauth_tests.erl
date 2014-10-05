@@ -2,6 +2,12 @@
 
 -compile(export_all).
 
+mock_setup_test_() ->
+  {setup,
+    fun start/0,
+    fun stop/1,
+    fun after_expiration_tests_false_test/1}.
+
 start() ->
   moka:start(mojoauth).
 
