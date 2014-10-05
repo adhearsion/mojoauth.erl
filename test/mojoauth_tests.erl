@@ -2,6 +2,12 @@
 
 -compile(export_all).
 
+start() ->
+  moka:start(mojoauth).
+
+stop(Moka) ->
+  moka:stop(Moka).
+
 create_secret_test() ->
   Secret = mojoauth:create_secret(),
   88 = byte_size(Secret).
@@ -29,6 +35,17 @@ attempt_extend_expiration_tests_false_test() ->
   Timestamp = Mega*1000000 + Secs,
   Username = integer_to_list(Timestamp + 10000),
   false = mojoauth:test_credentials([{username, Username}, {password, Password}], Secret).
+
+after_expiration_tests_false_test(Moka) ->
+  Secret = mojoauth:create_secret(),
+  Credentials = mojoauth:create_credentials({secret, Secret}),
+  {Mega, Secs, Micro} = os:timestamp(),
+  moka:replace(Moka, os, timestamp,
+    fun() ->
+      {Mega, Secs + 86400, Micro}
+    end),
+  moka:load(Moka),
+  false = mojoauth:test_credentials(Credentials, Secret).
 
 asserted_id_created_credentials_return_id_test() ->
   Id = "foobar",
