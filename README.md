@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/mojolingo/mojoauth.erl.svg?branch=develop)](http://travis-ci.org/mojolingo/mojo-auth.rb)
+[![Build Status](https://travis-ci.org/mojolingo/mojoauth.erl.svg?branch=develop)](http://travis-ci.org/mojolingo/mojoauth.erl)
 
 # mojoauth
 
