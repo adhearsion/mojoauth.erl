@@ -1,0 +1,2 @@
+-module(mojoauth).
+-vsn("0.1.0").

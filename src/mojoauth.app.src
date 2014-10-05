@@ -1,0 +1,14 @@
+{application, mojoauth,
+ [
+  {description, ""},
+  {vsn, "0.1.0"},
+  {modules, [mojoauth]},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { mojoauth_app, []}},
+  {env, []}
+ ]
+}.
