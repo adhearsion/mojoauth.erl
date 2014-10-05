@@ -1,0 +1,41 @@
+@title MojoAuth
+@author Ben Langfeld <ben@langfeld.me>
+@copyright 2014 Mojo Lingo LLC
+@version 0.1.0
+@doc MojoAuth is a set of standard approaches to cross-app authentication based on HMAC. See <a href="http://mojolingo.com/mojoauth">the MojoAuth website</a> for more general details.
+
+<h2>Basic Usage</h2>
+
+The basic pattern of use of Mojo Auth is:
+
+<h3>1. Create a secret key</h3>
+
+```
+1> Secret = mojoauth:create_secret().
+<<"eN1lvHK7cXPYFNwmEwZ3QNMAiCC651E5ikuEOj7+k4EMYTXb3XxXo3iBw4ScxqzJ+aH6aDCCe++LPVGRjgfl3Q==">>
+'''
+
+<h3>2. Create temporary credentials</h3>
+
+```
+2> Credentials = mojoauth:create_credentials({id, "foobar"}, {secret, Secret}).
+[{username,"1412629132:foobar"},
+ {password,<<"Q1RegXu0oYtm1UYqxRkegilugeM=">>}]
+'''
+
+<h3>3. Test credentials</h3>
+
+```
+3> mojoauth:test_credentials([{username, "1412629132:foobar"}, {password,<<"Q1RegXu0oYtm1UYqxRkegilugeM=">>}], Secret).
+"foobar"
+
+4> mojoauth:test_credentials([{username, "1412629132:foobar"}, {password,"wrongpassword"}], Secret).
+false
+'''
+
+<h3>4. 1 day later</h3>
+
+```
+5> mojoauth:test_credentials([{username, "1412629132:foobar"}, {password,<<"Q1RegXu0oYtm1UYqxRkegilugeM=">>}], Secret).
+false
+'''
