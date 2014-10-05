@@ -9,6 +9,7 @@ mock_setup_test_() ->
     fun after_expiration_tests_false_test/1}.
 
 start() ->
+  application:ensure_all_started(moka),
   moka:start(mojoauth).
 
 stop(Moka) ->
