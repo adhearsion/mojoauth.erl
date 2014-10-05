@@ -5,31 +5,39 @@
   create_secret/0,
   create_credentials/1,
   create_credentials/2,
+  create_credentials/3,
   test_credentials/2
 ]).
 
 create_secret() ->
   base64:encode(crypto:strong_rand_bytes(64)).
 
-create_credentials({id, Id}, {secret, Secret}) ->
+create_credentials({id, Id}, {ttl, Ttl}, {secret, Secret}) ->
   {Mega, Secs, _} = os:timestamp(),
-  Timestamp = Mega*1000000 + Secs,
+  Timestamp = Mega*1000000 + Secs + Ttl,
   Username = string:join([integer_to_list(Timestamp), Id], ":"),
   [
     {username, Username},
     {password, sign(Username, Secret)}
   ].
 
+create_credentials({id, Id}, {secret, Secret}) ->
+  create_credentials({id, Id}, {ttl, 86400}, {secret, Secret}).
+
 create_credentials({secret, Secret}) ->
   create_credentials({id, ""}, {secret, Secret}).
 
 test_credentials([{username, Username}, {password, Password}], Secret) ->
-  case string:tokens(Username, ":") of
-    [_, Id] ->
-      test_signature(Username, Password, Secret, Id);
-    [_] ->
-      test_signature(Username, Password, Secret, true)
-  end.
+  RetVal = case string:tokens(Username, ":") of
+    [Timestamp, Id] ->
+      case still_valid(Timestamp) of
+        true -> Id;
+        false -> false
+      end;
+    [Timestamp] ->
+      still_valid(Timestamp)
+  end,
+  test_signature(Username, Password, Secret, RetVal).
 
 sign(Message, Secret) ->
   base64:encode(crypto:hmac(sha, Secret, Message)).
@@ -39,3 +47,8 @@ test_signature(Username, Password, Secret, RetVal) ->
     Password -> RetVal;
     _ -> false
   end.
+
+still_valid(Timestamp) ->
+  {Mega, Secs, _} = os:timestamp(),
+  Now = Mega*1000000 + Secs,
+  Now < list_to_integer(Timestamp).

@@ -16,7 +16,24 @@ Simply run `make`.
 ## Usage
 
 ```erlang
+% Generate a shared secret
+2> Secret = mojoauth:create_secret().
+<<"eN1lvHK7cXPYFNwmEwZ3QNMAiCC651E5ikuEOj7+k4EMYTXb3XxXo3iBw4ScxqzJ+aH6aDCCe++LPVGRjgfl3Q==">>
 
+% Create temporary credentials
+3> Credentials = mojoauth:create_credentials({id, "foobar"}, {secret, Secret}).
+[{username,"1412629132:foobar"},
+ {password,<<"Q1RegXu0oYtm1UYqxRkegilugeM=">>}]
+
+% Test credentials
+4> mojoauth:test_credentials([{username, "1412629132:foobar"}, {password,<<"Q1RegXu0oYtm1UYqxRkegilugeM=">>}], Secret).
+"foobar"
+5> mojoauth:test_credentials([{username, "1412629132:foobar"}, {password,"wrongpassword"}], Secret).
+false
+
+% 1 day later
+6> mojoauth:test_credentials([{username, "1412629132:foobar"}, {password,<<"Q1RegXu0oYtm1UYqxRkegilugeM=">>}], Secret).
+false
 ```
 
 ## Contributing
