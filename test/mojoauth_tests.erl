@@ -13,7 +13,15 @@ mock_setup_test_() ->
     {setup,
       fun start/0,
       fun stop/1,
-      fun asserted_id_after_expiration_tests_false_test/1}
+      fun after_custom_expiration_tests_false_test/1},
+    {setup,
+      fun start/0,
+      fun stop/1,
+      fun asserted_id_after_expiration_tests_false_test/1},
+    {setup,
+      fun start/0,
+      fun stop/1,
+      fun asserted_id_after_custom_expiration_tests_false_test/1}
   ].
 
 start() ->
@@ -62,6 +70,17 @@ after_expiration_tests_false_test(Moka) ->
   moka:load(Moka),
   [?_assertEqual(false, mojoauth:test_credentials(Credentials, Secret))].
 
+after_custom_expiration_tests_false_test(Moka) ->
+  Secret = mojoauth:create_secret(),
+  Credentials = mojoauth:create_credentials({id, ""}, {ttl, 200}, {secret, Secret}),
+  {Mega, Secs, Micro} = os:timestamp(),
+  moka:replace(Moka, os, timestamp,
+    fun() ->
+      {Mega, Secs + 200 + 1, Micro}
+    end),
+  moka:load(Moka),
+  [?_assertEqual(false, mojoauth:test_credentials(Credentials, Secret))].
+
 asserted_id_created_credentials_return_id_test() ->
   Id = "foobar",
   Secret = mojoauth:create_secret(),
@@ -98,6 +117,18 @@ asserted_id_after_expiration_tests_false_test(Moka) ->
   moka:replace(Moka, os, timestamp,
     fun() ->
       {Mega, Secs + 86400 + 1, Micro}
+    end),
+  moka:load(Moka),
+  [?_assertEqual(false, mojoauth:test_credentials(Credentials, Secret))].
+
+asserted_id_after_custom_expiration_tests_false_test(Moka) ->
+  Id = "foobar",
+  Secret = mojoauth:create_secret(),
+  Credentials = mojoauth:create_credentials({id, Id}, {ttl, 200}, {secret, Secret}),
+  {Mega, Secs, Micro} = os:timestamp(),
+  moka:replace(Moka, os, timestamp,
+    fun() ->
+      {Mega, Secs + 200 + 1, Micro}
     end),
   moka:load(Moka),
   [?_assertEqual(false, mojoauth:test_credentials(Credentials, Secret))].

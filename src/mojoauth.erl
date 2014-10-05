@@ -5,20 +5,24 @@
   create_secret/0,
   create_credentials/1,
   create_credentials/2,
+  create_credentials/3,
   test_credentials/2
 ]).
 
 create_secret() ->
   base64:encode(crypto:strong_rand_bytes(64)).
 
-create_credentials({id, Id}, {secret, Secret}) ->
+create_credentials({id, Id}, {ttl, Ttl}, {secret, Secret}) ->
   {Mega, Secs, _} = os:timestamp(),
-  Timestamp = Mega*1000000 + Secs + 86400,
+  Timestamp = Mega*1000000 + Secs + Ttl,
   Username = string:join([integer_to_list(Timestamp), Id], ":"),
   [
     {username, Username},
     {password, sign(Username, Secret)}
   ].
+
+create_credentials({id, Id}, {secret, Secret}) ->
+  create_credentials({id, Id}, {ttl, 86400}, {secret, Secret}).
 
 create_credentials({secret, Secret}) ->
   create_credentials({id, ""}, {secret, Secret}).
