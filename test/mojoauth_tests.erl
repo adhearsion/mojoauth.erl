@@ -22,6 +22,14 @@ different_secret_tests_false_test() ->
   Credentials = mojoauth:create_credentials({secret, Secret1}),
   false = mojoauth:test_credentials(Credentials, Secret2).
 
+attempt_extend_expiration_tests_false_test() ->
+  Secret = mojoauth:create_secret(),
+  [_, {password, Password}] = mojoauth:create_credentials({secret, Secret}),
+  {Mega, Secs, _} = now(),
+  Timestamp = Mega*1000000 + Secs,
+  Username = integer_to_list(Timestamp + 10000),
+  false = mojoauth:test_credentials([{username, Username}, {password, Password}], Secret).
+
 asserted_id_created_credentials_return_id_test() ->
   Id = "foobar",
   Secret = mojoauth:create_secret(),
@@ -40,3 +48,12 @@ asserted_id_different_secret_tests_false_test() ->
   Secret2 = mojoauth:create_secret(),
   Credentials = mojoauth:create_credentials({id, Id}, {secret, Secret1}),
   false = mojoauth:test_credentials(Credentials, Secret2).
+
+asserted_id_attempt_extend_expiration_tests_false_test() ->
+  Id = "foobar",
+  Secret = mojoauth:create_secret(),
+  [_, {password, Password}] = mojoauth:create_credentials({id, Id}, {secret, Secret}),
+  {Mega, Secs, _} = now(),
+  Timestamp = Mega*1000000 + Secs,
+  Username = string:join([integer_to_list(Timestamp + 10000), Id], ":"),
+  false = mojoauth:test_credentials([{username, Username}, {password, Password}], Secret).
