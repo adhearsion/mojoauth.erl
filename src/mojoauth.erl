@@ -12,7 +12,7 @@ create_secret() ->
   base64:encode(crypto:strong_rand_bytes(64)).
 
 create_credentials({id, Id}, {secret, Secret}) ->
-  {Mega, Secs, _} = now(),
+  {Mega, Secs, _} = os:timestamp(),
   Timestamp = Mega*1000000 + Secs,
   Username = string:join([integer_to_list(Timestamp), Id], ":"),
   [
