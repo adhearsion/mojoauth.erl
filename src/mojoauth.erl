@@ -51,23 +51,21 @@ create_credentials({secret, Secret}) ->
 %% @doc Test a set of credentials are valid for the given secret. When an identity is asserted, the identity is returned as a string, otherwise a boolean is returned.
 test_credentials([{username, Username}, {password, Password}], Secret) ->
   RetVal = case string:tokens(Username, ":") of
-    [Timestamp, Id] ->
-      case still_valid(Timestamp) of
-        true -> Id;
-        false -> false
-      end;
-    [Timestamp] ->
-      still_valid(Timestamp)
+    [Timestamp, Id] -> Id;
+    [Timestamp] -> undefined
   end,
-  test_signature(Username, Password, Secret, RetVal).
+  case still_valid(Timestamp) of
+    true -> test_signature(Username, Password, Secret, RetVal);
+    false -> {expired}
+  end.
 
 sign(Message, Secret) ->
   base64:encode(crypto:hmac(sha, Secret, Message)).
 
-test_signature(Username, Password, Secret, RetVal) ->
+test_signature(Username, Password, Secret, Id) ->
   case sign(Username, Secret) of
-    Password -> RetVal;
-    _ -> false
+    Password -> {ok,Id};
+    _ -> {invalid}
   end.
 
 still_valid(Timestamp) ->

@@ -27,13 +27,13 @@ Simply run `make`.
 
 % Test credentials
 4> mojoauth:test_credentials([{username, "1412629132:foobar"}, {password,<<"Q1RegXu0oYtm1UYqxRkegilugeM=">>}], Secret).
-"foobar"
+{ok,"foobar"}
 5> mojoauth:test_credentials([{username, "1412629132:foobar"}, {password,"wrongpassword"}], Secret).
-false
+{invalid}
 
 % 1 day later
 6> mojoauth:test_credentials([{username, "1412629132:foobar"}, {password,<<"Q1RegXu0oYtm1UYqxRkegilugeM=">>}], Secret).
-false
+{expired}
 ```
 
 ## Contributing
