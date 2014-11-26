@@ -2,7 +2,7 @@
 @author Ben Langfeld <ben@langfeld.me>
 @copyright 2014 Mojo Lingo LLC
 @version 0.1.0
-@doc MojoAuth is a set of standard approaches to cross-app authentication based on HMAC. See <a href="http://mojolingo.com/mojoauth">the MojoAuth website</a> for more general details.
+@doc MojoAuth is a set of standard approaches to cross-app authentication based on HMAC. See <a href="http://mojoauth.mojolingo.com">the MojoAuth website</a> for more general details.
 
 <h2>Basic Usage</h2>
 
