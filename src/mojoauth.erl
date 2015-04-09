@@ -33,7 +33,7 @@ create_credentials({id, Id}, {ttl, Ttl}, {secret, Secret}) ->
   Timestamp = Mega*1000000 + Secs + Ttl,
   Username = string:join([integer_to_list(Timestamp), Id], ":"),
   [
-    {username, Username},
+    {username, list_to_binary(Username)},
     {password, sign(Username, Secret)}
   ].
 
@@ -50,8 +50,8 @@ create_credentials({secret, Secret}) ->
 %% @spec test_credentials(Credential::credential(), secret()) -> any()
 %% @doc Test a set of credentials are valid for the given secret. When an identity is asserted, the identity is returned as a string, otherwise a boolean is returned.
 test_credentials([{username, Username}, {password, Password}], Secret) ->
-  RetVal = case string:tokens(Username, ":") of
-    [Timestamp, Id] -> Id;
+  RetVal = case string:tokens(binary_to_list(Username), ":") of
+    [Timestamp, Id] -> list_to_binary(Id);
     [Timestamp] -> undefined
   end,
   case still_valid(Timestamp) of
