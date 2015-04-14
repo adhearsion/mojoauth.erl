@@ -132,3 +132,9 @@ asserted_id_after_custom_expiration_tests_false_test(Moka) ->
     end),
   moka:load(Moka),
   [?_assertEqual({expired}, mojoauth:test_credentials(Credentials, Secret))].
+
+asserted_id_without_expiration_tests_false_test() ->
+  Id = <<"foobar">>,
+  Secret = mojoauth:create_secret(),
+  [_, {password, Password}] = mojoauth:create_credentials({id, Id}, {secret, Secret}),
+  {expired} = mojoauth:test_credentials([{username, Id}, {password, Password}], Secret).

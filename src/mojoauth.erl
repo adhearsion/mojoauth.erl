@@ -71,4 +71,8 @@ test_signature(Username, Password, Secret, Id) ->
 still_valid(Timestamp) ->
   {Mega, Secs, _} = os:timestamp(),
   Now = Mega*1000000 + Secs,
-  Now < list_to_integer(Timestamp).
+  try
+    Now < list_to_integer(Timestamp)
+  catch error:badarg ->
+    false
+  end.
